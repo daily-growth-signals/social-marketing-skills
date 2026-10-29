@@ -1,0 +1,8 @@
+{
+  "name": "Zhihu Article Creator",
+  "source": "local",
+  "version": "0.1.3",
+  "skillId": "skill_zhihu_article_creator",
+  "description_zh": "通过 SignalDig MCP 检索当下知乎公开讨论，用判断与成稿思考模型生成带来源的回答草稿；不做固定文风套路，避免同质化模板。",
+  "description_en": "Retrieve live Zhihu evidence via SignalDig MCP and draft with judgment craft—not fingerprintable style or hook packs."
+}

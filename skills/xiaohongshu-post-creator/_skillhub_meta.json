@@ -1,0 +1,8 @@
+{
+  "name": "Xiaohongshu Post Creator",
+  "source": "local",
+  "version": "0.1.3",
+  "skillId": "skill_xiaohongshu_post_creator",
+  "description_zh": "通过 SignalDig MCP 检索当下小红书公开笔记，判断切入点并生成笔记文案；诚实标【待填】，不做爆款母版库，不自动发帖。",
+  "description_en": "Retrieve live Xiaohongshu notes via SignalDig MCP and draft with angle judgment—no carousel template packs, never auto-publish."
+}

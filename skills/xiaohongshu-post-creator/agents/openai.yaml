@@ -1,0 +1,14 @@
+interface:
+  display_name: "Xiaohongshu Post Creator"
+  short_description: "Draft Xiaohongshu notes from live SignalDig evidence"
+  brand_color: "#FF2442"
+  default_prompt: "Use $xiaohongshu-post-creator with SignalDig MCP: research current notes, judge the angle from this sample only, and draft copy without template packs. Image brief only if needed—do not pretend images exist. Mark gaps as 【待填】. Stop if MCP is disconnected."
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "signaldig"
+      description: "SignalDig unified Social and SEO research service"
+      transport: "streamable_http"
+      url: "https://mcp.signaldig.com/mcp"
+policy:
+  allow_implicit_invocation: true

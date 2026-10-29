@@ -1,0 +1,77 @@
+name: Release Skills Package
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get version from tag
+        id: version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+      - name: Create skills zip package
+        run: bash scripts/package.sh "${{ steps.version.outputs.VERSION }}"
+
+      - name: Extract reviewed release notes
+        id: release_notes
+        shell: bash
+        run: |
+          VERSION="${{ steps.version.outputs.VERSION }}"
+          VERSION_NUMBER="${VERSION#v}"
+          extract_notes() {
+            local changelog_file="$1"
+            local output_file="$2"
+            awk -v version="$VERSION_NUMBER" '
+              $0 ~ "^## \\[" version "\\]( - [0-9]{4}-[0-9]{2}-[0-9]{2})?$" {
+                capture = 1
+                next
+              }
+              capture && /^## \[/ { exit }
+              capture { print }
+            ' "$changelog_file" > "$output_file"
+          }
+
+          extract_notes CHANGELOG.md /tmp/release_body_en.md
+          extract_notes CHANGELOG-zh.md /tmp/release_body_zh.md
+
+          if ! grep -Eq '^- .+' /tmp/release_body_en.md; then
+            echo "CHANGELOG.md has no reviewed entry for ${VERSION}" >&2
+            exit 1
+          fi
+          if ! grep -Eq '^- .+' /tmp/release_body_zh.md; then
+            echo "CHANGELOG-zh.md has no reviewed entry for ${VERSION}" >&2
+            exit 1
+          fi
+
+          {
+            cat /tmp/release_body_zh.md
+            echo ""
+            echo "---"
+            echo ""
+            echo "<details><summary>English release notes</summary>"
+            echo ""
+            cat /tmp/release_body_en.md
+            echo ""
+            echo "</details>"
+          } > /tmp/release_body.md
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Social Marketing Skills ${{ steps.version.outputs.VERSION }}
+          body_path: /tmp/release_body.md
+          files: dist/social-marketing-skills-*.zip
+          draft: false
+          prerelease: false
